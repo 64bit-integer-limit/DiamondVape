@@ -25,6 +25,10 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
 
+    # MAGIC FIX STEP: Forces Linux to treat gradlew as an executable program
+    - name: Make Gradle Wrapper Executable
+      run: chmod +x ./gradlew
+
     # Executes the local Gradle Wrapper build script natively
     - name: Build Mod
       run: ./gradlew build

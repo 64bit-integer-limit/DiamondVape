@@ -21,13 +21,15 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    # Automatically builds the mod and generates your final .jar file
-    - name: Build Mod with Gradle
+    # 1. Setup Gradle environment, caching, and fix permissions
+    - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
-      with:
-        arguments: build
 
-    # Optional: This saves the compiled mod so you can download it from GitHub
+    # 2. Separate native step to execute the Gradle build
+    - name: Build Mod
+      run: ./gradlew build
+
+    # Saves the compiled mod so you can download it from GitHub
     - name: Upload Mod Artifact
       uses: actions/upload-artifact@v4
       with:

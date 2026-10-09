@@ -17,12 +17,14 @@ repositories {
 }
 
 dependencies {
-    // To change the versions, modify the gradle.properties file
+    // 1. Tell Gradle to pull down your exact targeted Minecraft build
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    // This line supplies the client lifecycle and keybinding events your mod needs
+    // 2. CHANGE THIS LINE: Use identity intermediary mappings instead of Yarn
+    mappings "net.fabricmc:intermediary:${project.minecraft_version}:v2"
+
+    // 3. Keep your Loader and Fabric API elements the same
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 }
 

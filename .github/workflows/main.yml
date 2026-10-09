@@ -21,17 +21,15 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    # Automatically installs a dedicated version of Gradle on the machine
+    # Sets up the environment and safely handles caching for dependencies
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
-      with:
-        gradle-version: '8.1.1' # A standard Gradle version for 1.19.4 Fabric mods
 
-    # Run the build command directly using the installed Gradle package
+    # Executes the local Gradle Wrapper build script natively
     - name: Build Mod
-      run: gradle build
+      run: ./gradlew build
 
-    # Saves the compiled mod so you can download it from GitHub
+    # Saves the compiled mod so you can download it from your GitHub Actions page
     - name: Upload Mod Artifact
       uses: actions/upload-artifact@v4
       with:

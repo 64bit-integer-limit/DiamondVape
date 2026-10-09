@@ -14,11 +14,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Minecraft 1.19.4 requires exactly Java 17 to compile properly
-    - name: Set up JDK 17
+    - name: Set up JDK 25
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '25'
         distribution: 'temurin'
 
     # Sets up the environment and safely handles caching for dependencies

@@ -1,0 +1,35 @@
+name: Build Fabric Mod
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Minecraft 1.19.4 requires exactly Java 17 to compile properly
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    # Automatically builds the mod and generates your final .jar file
+    - name: Build Mod with Gradle
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        arguments: build
+
+    # Optional: This saves the compiled mod so you can download it from GitHub
+    - name: Upload Mod Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Fabric-Mod-JAR
+        path: build/libs/*.jar

@@ -53,3 +53,11 @@ jar {
         rename { "${it}_${project.base.archivesName.get()}"}
     }
 }
+
+// Force the Java compiler toolchain to treat Intermediary names as human-readable dev names
+loom {
+    extraMappings(project.minecraft_version) { mappings ->
+        mappings.from = "intermediary"
+        mappings.to = "intermediary"
+    }
+}

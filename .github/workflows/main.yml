@@ -21,13 +21,15 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    # 1. Setup Gradle environment, caching, and fix permissions
+    # Automatically installs a dedicated version of Gradle on the machine
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
+      with:
+        gradle-version: '8.1.1' # A standard Gradle version for 1.19.4 Fabric mods
 
-    # 2. Separate native step to execute the Gradle build
+    # Run the build command directly using the installed Gradle package
     - name: Build Mod
-      run: ./gradlew build
+      run: gradle build
 
     # Saves the compiled mod so you can download it from GitHub
     - name: Upload Mod Artifact

@@ -64,12 +64,11 @@ private void lockOnEntity(class_310 client, class_1309 entity) {
     float targetPitch = class_3532.method_15393((float)(-Math.toDegrees(Math.atan2(diffY, diffXZ))));
     
     // Define the speed factor (0.0f = no movement, 1.0f = instant lock-on)
-    // Adjust this value to make the camera snappier or smoother
     float speedFactor = 0.15F; 
 
-    // Current player angles
-    float currentYaw = client.field_1724.method_36456(); // assuming this gets yaw, or use client.field_1724.field_6031/field_6241
-    float currentPitch = client.field_1724.method_36457(); // assuming this gets pitch, or use client.field_1724.field_5965/field_6004
+    // FIXED: Directly reading the fields for current yaw and pitch
+    float currentYaw = client.field_1724.field_6031; 
+    float currentPitch = client.field_1724.field_5965; 
 
     // Safely interpolate angles by finding the shortest path distance
     float yawDiff = class_3532.method_15393(targetYaw - currentYaw);

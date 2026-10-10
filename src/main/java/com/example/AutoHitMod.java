@@ -40,10 +40,16 @@ public class AutoHitMod implements ClientModInitializer {
          }
       });
    }
-   private void attackEntity(class_1297 target) {
-      if (this.client.field_1761 != null && this.client.field_1724 != null) {
-         this.client.field_1761.method_2918(this.client.field_1724, target);
-         this.client.field_1724.method_6104(class_1268.field_5808);
-      }
+private void attackEntity(class_1297 target) {
+   if (this.client.field_1761 != null && this.client.field_1724 != null && target != null) {
+      // 1. Save whatever the player is actually looking at right now
+      class_1297 originalTarget = this.client.field_1300; 
+
+      // 2. Set crosshair target to your target and trigger the simulated left-click
+      this.client.field_1300 = target; 
+      this.client.method_1536(); // doAttack()
+
+      // 3. Clean up: Restore the original crosshair target immediately
+      this.client.field_1300 = originalTarget; 
    }
 }

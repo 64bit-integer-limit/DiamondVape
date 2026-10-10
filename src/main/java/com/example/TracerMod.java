@@ -59,8 +59,12 @@ public class TracerMod implements ClientModInitializer {
                double y = entity.method_30950(context.tickDelta()).field_1351 - cameraPos.field_1351;
                double z = entity.method_30950(context.tickDelta()).field_1350 - cameraPos.field_1350;
                float targetY = (float)y + entity.method_17682() / 2.0F;
-               bufferBuilder.method_22918(identityMatrix, 0.0F, 0.0F, -0.1F).method_1336(255, 0, 0, 255).method_1344();
-               bufferBuilder.method_22918(worldMatrix, (float)x, targetY, (float)z).method_1336(0, 255, 0, 255).method_1344();
+               
+               // Origin point: White (RGB: 255, 255, 255)
+               bufferBuilder.method_22918(identityMatrix, 0.0F, 0.0F, -0.1F).method_1336(255, 255, 255, 255).method_1344();
+               
+               // Target destination point: Cyan (RGB: 0, 255, 255)
+               bufferBuilder.method_22918(worldMatrix, (float)x, targetY, (float)z).method_1336(0, 255, 255, 255).method_1344();
             }
          }
 

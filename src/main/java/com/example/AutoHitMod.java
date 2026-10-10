@@ -79,7 +79,8 @@ private void attackEntity(class_1297 target) {
             
          } catch (Exception e) {
             e.printStackTrace(); 
-         }
-      });
+            }
+         });
+      }
    }
-}
+]

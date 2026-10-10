@@ -27,7 +27,7 @@ public class AimbotMod implements ClientModInitializer {
                if (client.field_1724 != null && client.field_1687 != null) {
                   while (this.toggleKey.method_1436()) {
                      enabled = !enabled;
-                     client.field_1724.method_7353(class_2561.method_43470("[HELLISH] Aimbot " + (enabled ? "§aON" : "§cOFF")), false);
+                     client.field_1724.method_7353(class_2561.method_43470("[DiamondVape] Aimbot " + (enabled ? "§aON" : "§cOFF")), false);
                   }
 
                   if (enabled && client.field_1755 == null) {

@@ -42,16 +42,32 @@ public class AutoHitMod implements ClientModInitializer {
    }
 private void attackEntity(class_1297 target) {
    if (this.client.field_1761 != null && this.client.field_1724 != null && target != null) {
-      // 1. Save whatever the player is actually looking at right now
-      class_1297 originalTarget = this.client.field_1300; 
+      // 1. Store what the player is actually looking at right now
+      class_1297 originalTarget = this.client.field_1692; 
 
-      // 2. Set crosshair target to your target and trigger the simulated left-click
-      this.client.field_1300 = target; 
-      this.client.method_1536(); // doAttack()
+      // 2. Set crosshair target to your desired bot target
+      this.client.field_1692 = target; 
+      
+      // 3. Dynamically locate and execute the private doAttack method via Reflection
+      try {
+          Method doAttackMethod;
+          try {
+              // Try development/intermediary name used during gradlew compilation
+              doAttackMethod = this.client.getClass().getDeclaredMethod("method_1536");
+          } catch (NoSuchMethodException e) {
+              // Production/Obfuscated fallback name just in case
+              doAttackMethod = this.client.getClass().getDeclaredMethod("doAttack");
+          }
+          
+          doAttackMethod.setAccessible(true); // Bypass the "private" restriction safely
+          doAttackMethod.invoke(this.client); // Execute the left-click
+          
+      } catch (Exception e) {
+          e.printStackTrace(); // Log an error to console if something breaks
+      }
 
-      // 3. Clean up: Restore the original crosshair target immediately
-      this.client.field_1300 = originalTarget; 
+      // 4. Restore the original target instantly
+      this.client.field_1692 = originalTarget; 
       }
    }
-
 }

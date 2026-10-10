@@ -84,4 +84,4 @@ private void lockOnEntity(class_310 client, class_1309 entity, float speed) {
    client.field_1724.field_5982 = interpolatedYaw;
    client.field_1724.field_6004 = interpolatedPitch;
       };
-   ]
+   }

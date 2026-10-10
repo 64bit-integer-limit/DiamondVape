@@ -1,7 +1,6 @@
 plugins {
     id 'fabric-loom' version '1.1-SNAPSHOT'
     id 'maven-publish'
-    id "com.jamiesites.immediled" version "1.1.1" 
 }
 
 version = project.mod_version
@@ -12,20 +11,23 @@ base {
 }
 
 repositories {
-    // Add repositories necessary for Fabric dependencies
-    maven { url = "https://fabricmc.net" }
+    maven { url = "https://maven.fabricmc.net/" }
     mavenCentral()
 }
+
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
 
-    // CHANGE THIS LINE: This forces Loom to use identity mappings safely
-    mappings loom.officialMojangMappings()
+    // Use Fabric's layered mapping API to force an empty translation layer.
+    // This allows the Java compiler to read raw 'class_XXX' Intermediary names.
+    mappings loom.layered {
+        officialMojangMappings()
+        // Leaving this empty forces Loom to map variables straight to Intermediary
+    }
 
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 }
-
 
 processResources {
     inputs.property "version", project.version
@@ -36,15 +38,12 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    // Minecraft 1.19.4 requires Java 17 toolchains
     it.options.release = 17
     it.options.encoding = "UTF-8"
 }
 
 java {
-    // Automatically bundle a sources JAR alongside your mod compilation
     withSourcesJar()
-
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }

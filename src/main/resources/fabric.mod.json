@@ -1,11 +1,11 @@
 {
 	"schemaVersion": 1,
 	"id": "template-mod",
-	"version": "1.0.0",
+	"version": "1.4.2",
 	"name": "Extra Keybinds",
-	"description": "Extra keybinds that don't giv you an advantage in PVP.",
+	"description": "Extra keybinds that don't give you an advantage in PVP.",
 	"authors": [
-		"Me!"
+		"cnl3"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",

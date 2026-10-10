@@ -1,5 +1,6 @@
 package com.example;
 
+import java.lang.reflect.Method;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -56,11 +57,21 @@ public class AutoHitMod implements ClientModInitializer {
          // Set the keybind state to active
          attackKeyBind.method_23481(true); // setPressed(true)
 
-         // Force the game engine to natively evaluate the keypress sequence 
-         // through the official options handler loop
-         if (this.client.field_1690.field_1904.method_1436()) {
-             // Accessor method executes the vanilla click sequence inside the correct tick delta
-             this.client.method_1536(); // Natively triggers doAttack() safely
+         // Force the game engine to evaluate the keypress sequence 
+         if (attackKeyBind.method_1436()) {
+             try {
+                 // Use Reflection to access and invoke the private method_1536 loop safely
+                 Method doAttackMethod;
+                 try {
+                     doAttackMethod = this.client.getClass().getDeclaredMethod("method_1536"); // Dev mapping
+                 } catch (NoSuchMethodException e) {
+                     doAttackMethod = this.client.getClass().getDeclaredMethod("doAttack"); // Prod fallback
+                 }
+                 doAttackMethod.setAccessible(true);
+                 doAttackMethod.invoke(this.client);
+             } catch (Exception e) {
+                 e.printStackTrace();
+             }
          }
 
          // Instantly release the key state to prevent the attack key from sticking down

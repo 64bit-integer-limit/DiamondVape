@@ -1,9 +1,6 @@
 package com.example;
 
-import java.awt.Robot;
-import java.awt.event.InputEvent;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -47,28 +44,29 @@ public class AutoHitMod implements ClientModInitializer {
       });
    }
 
-private void attackEntity(class_1297 target) {
-   // Ensure the client context and player are valid before clicking
-   if (this.client.field_1761 == null || this.client.field_1724 == null || target == null) {
-      return;
-   }
+   private void attackEntity(class_1297 target) {
+      if (this.client.field_1761 == null || this.client.field_1724 == null || target == null) {
+         return;
+      }
 
-   try {
-      // 1. Initialize the Java Robot controller
-      Robot mouseRobot = new Robot();
+      try {
+         // Get the vanilla left-click key binding instance
+         class_304 attackKeyBind = this.client.field_1690.field_1904; // client.options.attackKey
 
-      // 2. Simulate pressing down the physical left mouse button
-      mouseRobot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+         // 1. Force the physical press state to true
+         attackKeyBind.method_23481(true); // setPressed(true)
 
-      // 3. Introduce a tiny delay (in milliseconds) to mirror real human hardware responsiveness
-      Thread.sleep(10); 
+         // 2. Inject a click directly into the KeyBinding's internal input stream queue (field_1653 = timesPressed)
+         try {
+             Field timesPressedField = class_304.class.getDeclaredField("field_1653");
+             timesPressedField.setAccessible(true);
+             
+             // Tell the game loop the key was clicked 1 time natively
+             timesPressedField.setInt(attackKeyBind, 1); 
+         } catch (Exception ignored) {}
 
-      // 4. Simulate releasing the physical left mouse button
-      mouseRobot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-
-   } catch (Exception e) {
-      // Handle potential headless environment errors or thread interruptions safely
-      e.printStackTrace();
+      } catch (Exception e) {
+         e.printStackTrace();
       }
    }
 }

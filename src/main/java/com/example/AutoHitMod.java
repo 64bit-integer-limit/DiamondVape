@@ -1,5 +1,6 @@
 package com.example;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -52,46 +53,64 @@ public static void attackEntity(class_1297 target) {
     targetToHit = target;
 }
 
-// CALL THIS METHOD inside your client's HUD/Render loop or from an existing 
-// client tick event loop if it runs at the start of a frame.
-public void onRenderUpdate() {
+// Store your target in a static variable inside AutoHitMod
+public static class_1297 targetToHit = null;
+
+public static void attackEntity(class_1297 target) {
+    targetToHit = target;
+}
+
+// Call this method from your client's core update tick loop 
+// (e.g., inside an onTick(), onUpdate(), or your module execution thread)
+public void processAutoHit() {
     if (targetToHit == null || this.client.field_1761 == null || this.client.field_1724 == null) {
         return;
     }
 
     class_1297 target = targetToHit;
-    targetToHit = null; // Clear queue instantly to prevent double-hitting
+    targetToHit = null; // Instantly consume the target to prevent looping issues
 
-    try {
-        // 1. Back up the player's true crosshair state
-        class_1297 originalTargetedEntity = this.client.field_1692; // targetedEntity
-        net.minecraft.class_239 originalCrosshairTarget = this.client.field_1765; // crosshairTarget
-
-        // 2. Spoof the crosshair look-at vectors completely
-        this.client.field_1692 = target;
-        this.client.field_1765 = new net.minecraft.class_3966(target); // Fake EntityHitResult
-
-        // 3. Spoof the physical left-click key binding state
-        net.minecraft.class_304 attackKeyBind = this.client.field_1690.field_1904; // client.options.attackKey
-        attackKeyBind.method_23481(true); // setPressed(true)
-
-        // 4. Force execute the attack method natively
-        Method doAttackMethod;
+    // Force the execution to run through the main thread scheduler 
+    // to match vanilla packet priority exactly
+    this.client.execute(() -> {
         try {
-            doAttackMethod = this.client.getClass().getDeclaredMethod("method_1536");
-        } catch (NoSuchMethodException e) {
-            doAttackMethod = this.client.getClass().getDeclaredMethod("doAttack");
-        }
-        doAttackMethod.setAccessible(true);
-        doAttackMethod.invoke(this.client);
+            // 1. Back up the player's true crosshair look-at vectors
+            class_1297 originalTargetedEntity = this.client.field_1692; // targetedEntity
+            net.minecraft.class_239 originalCrosshairTarget = this.client.field_1765; // crosshairTarget
 
-        // 5. Instantly release the keybind and clean up crosshair data
-        attackKeyBind.method_23481(false); // setPressed(false)
-        this.client.field_1692 = originalTargetedEntity;
-        this.client.field_1765 = originalCrosshairTarget;
+            // 2. Spoof crosshair fields smoothly on the main thread
+            this.client.field_1692 = target;
+            this.client.field_1765 = new net.minecraft.class_3966(target); // Fake EntityHitResult
 
-    } catch (Exception e) {
-        e.printStackTrace();
-       }
+            // 3. Force the physical left-click key binding press state
+            net.minecraft.class_304 attackKeyBind = this.client.field_1690.field_1904; // client.options.attackKey
+            attackKeyBind.method_23481(true); // setPressed(true)
+
+            // 4. Force attackCooldown (field_1740) to 0 so doAttack handles it natively 
+            try {
+                Field cooldownField = this.client.getClass().getDeclaredField("field_1740");
+                cooldownField.setAccessible(true);
+                cooldownField.setInt(this.client, 0); // Reset weapon attack delay
+            } catch (Exception ignored) {}
+
+            // 5. Fire the native doAttack method
+            Method doAttackMethod;
+            try {
+                doAttackMethod = this.client.getClass().getDeclaredMethod("method_1536"); // doAttack()
+            } catch (NoSuchMethodException e) {
+                doAttackMethod = this.client.getClass().getDeclaredMethod("doAttack");
+            }
+            doAttackMethod.setAccessible(true);
+            doAttackMethod.invoke(this.client);
+
+            // 6. Clean up: Release keybind and restore genuine crosshair variables
+            attackKeyBind.method_23481(false); // setPressed(false)
+            this.client.field_1692 = originalTargetedEntity; 
+            this.client.field_1765 = originalCrosshairTarget; 
+
+        } catch (Exception e) {
+            e.printStackTrace();
+           }
+       });
    }
 }

@@ -85,5 +85,5 @@ private void lockOnEntity(class_310 client, class_1309 entity) {
     client.field_1724.field_6283 = newYaw;
     client.field_1724.field_5982 = newYaw;
     client.field_1724.field_6004 = newPitch;
-   };
-
+      };
+   }

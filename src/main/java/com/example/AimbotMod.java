@@ -63,21 +63,33 @@ private void lockOnEntity(class_310 client, class_1309 entity) {
     float targetYaw = class_3532.method_15393((float)Math.toDegrees(Math.atan2(diffZ, diffX)) - 90.0F);
     float targetPitch = class_3532.method_15393((float)(-Math.toDegrees(Math.atan2(diffY, diffXZ))));
     
-    // Define the speed factor (0.0f = no movement, 1.0f = instant lock-on)
-    float speedFactor = 0.15F; 
+    // CURRENT SETTING: Maximum degrees the camera can rotate per execution.
+    // Higher values make tracking faster; lower values make it slower and smoother.
+    float degreesPerTick = 5.0F; 
 
-    // FIXED: Using getter methods instead of private fields
+    // Get current client angles via accessible methods
     float currentYaw = client.field_1724.method_36454(); 
     float currentPitch = client.field_1724.method_36455(); 
 
-    // Safely interpolate angles by finding the shortest path distance
+    // Find the total angular distance to the target
     float yawDiff = class_3532.method_15393(targetYaw - currentYaw);
     float pitchDiff = class_3532.method_15393(targetPitch - currentPitch);
 
-    float interpolatedYaw = currentYaw + yawDiff * speedFactor;
-    float interpolatedPitch = currentPitch + pitchDiff * speedFactor;
+    // Smoothly step the YAW at a constant rate, preventing large jumps
+    float interpolatedYaw = currentYaw;
+    if (Math.abs(yawDiff) > 0.0F) {
+        float yawStep = Math.min(Math.abs(yawDiff), degreesPerTick);
+        interpolatedYaw += Math.signum(yawDiff) * yawStep;
+    }
 
-    // Apply the smoothed angles
+    // Smoothly step the PITCH at a constant rate, preventing large jumps
+    float interpolatedPitch = currentPitch;
+    if (Math.abs(pitchDiff) > 0.0F) {
+        float pitchStep = Math.min(Math.abs(pitchDiff), degreesPerTick);
+        interpolatedPitch += Math.signum(pitchDiff) * pitchStep;
+    }
+
+    // Apply the perfectly smoothed angles
     client.field_1724.method_36456(interpolatedYaw);
     client.field_1724.method_36457(interpolatedPitch);
     client.field_1724.field_6241 = interpolatedYaw;

@@ -50,4 +50,3 @@ private void attackEntity(class_1297 target) {
         ((MinecraftClientAccessor) this.client).invokeDoAttack(); 
        }
    }
-}

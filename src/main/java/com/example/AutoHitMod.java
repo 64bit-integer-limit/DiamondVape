@@ -49,4 +49,5 @@ private void attackEntity(class_1297 target) {
         // Simulates a physical left click input
         ((MinecraftClientAccessor) this.client).invokeDoAttack(); 
        }
-   }
+   };
+}

@@ -42,22 +42,29 @@ public class AutoHitMod implements ClientModInitializer {
       });
    }
 
+
 private void attackEntity(class_1297 target) {
    if (this.client.field_1761 != null && this.client.field_1724 != null && target != null) {
       
-      // 1. Back up the player's true crosshair state to prevent camera/mouse glitching
+      // 1. Back up the player's true crosshair look-at states
       class_1297 originalTargetedEntity = this.client.field_1692; // targetedEntity
       net.minecraft.class_239 originalCrosshairTarget = this.client.field_1765; // crosshairTarget
 
-      // 2. Generate a fake EntityHitResult spoofing that your mouse cursor is touching the bot target
-      net.minecraft.class_3966 fakeEntityHit = new net.minecraft.class_3966(target);
+      // 2. Spoof the crosshair fields completely so the game thinks we are targeting the entity
+      this.client.field_1692 = target;
+      this.client.field_1765 = new net.minecraft.class_3966(target); // Fake EntityHitResult
 
-      // 3. Spoof the game fields completely
-      this.client.field_1692 = target;             // Sets targetedEntity
-      this.client.field_1765 = fakeEntityHit;       // Sets crosshairTarget to our fake EntityHitResult
+      // 3. Programmatically force the native left-click keybind to think it was physically pressed
+      // field_1904 is the intermediary mapping for client.options.attackKey
+      net.minecraft.class_304 attackKeyBind = this.client.field_1690.field_1904; 
+      
+      // Set the keypress state to true
+      attackKeyBind.method_23481(true); // setPressed(true)
 
-      // 4. Force the game engine to execute a real native left-click using your Reflection loop
+      // 4. Force the keybind's internal "timesPressed" tick increment loops via Reflection
       try {
+          // Look up the private "timesPressed" or "wasPressed" tracking logic if needed,
+          // but calling method_1536 directly while the crosshair AND key are pressed handles everything.
           Method doAttackMethod;
           try {
               doAttackMethod = this.client.getClass().getDeclaredMethod("method_1536");
@@ -72,7 +79,8 @@ private void attackEntity(class_1297 target) {
           e.printStackTrace(); 
       }
 
-      // 5. Restore the player's actual crosshair state immediately after the attack executes
+      // 5. Instantly release the keybind and restore the player's actual crosshair 
+      attackKeyBind.method_23481(false); // setPressed(false)
       this.client.field_1692 = originalTargetedEntity; 
       this.client.field_1765 = originalCrosshairTarget; 
       }

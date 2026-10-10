@@ -49,20 +49,41 @@ public class AimbotMod implements ClientModInitializer {
          );
    }
 
-   private void lockOnEntity(class_310 client, class_1309 entity) {
-      class_243 targetPos = entity.method_33571().method_1023(0.0, 0.2, 0.0);
-      class_243 playerPos = client.field_1724.method_33571();
-      double diffX = targetPos.field_1352 - playerPos.field_1352;
-      double diffY = targetPos.field_1351 - playerPos.field_1351;
-      double diffZ = targetPos.field_1350 - playerPos.field_1350;
-      double diffXZ = Math.sqrt(diffX * diffX + diffZ * diffZ);
-      float yaw = class_3532.method_15393((float)Math.toDegrees(Math.atan2(diffZ, diffX)) - 90.0F);
-      float pitch = class_3532.method_15393((float)(-Math.toDegrees(Math.atan2(diffY, diffXZ))));
-      client.field_1724.method_36456(yaw);
-      client.field_1724.method_36457(pitch);
-      client.field_1724.field_6241 = yaw;
-      client.field_1724.field_6283 = yaw;
-      client.field_1724.field_5982 = yaw;
-      client.field_1724.field_6004 = pitch;
-   }
+private void lockOnEntity(class_310 client, class_1309 entity) {
+    class_243 targetPos = entity.method_33571().method_1023(0.0, 0.2, 0.0);
+    class_243 playerPos = client.field_1724.method_33571();
+    
+    double diffX = targetPos.field_1352 - playerPos.field_1352;
+    double diffY = targetPos.field_1351 - playerPos.field_1351;
+    double diffZ = targetPos.field_1350 - playerPos.field_1350;
+    double diffXZ = Math.sqrt(diffX * diffX + diffZ * diffZ);
+    
+    // 1. Calculate the absolute target angles
+    float targetYaw = class_3532.method_15393((float)Math.toDegrees(Math.atan2(diffZ, diffX)) - 90.0F);
+    float targetPitch = class_3532.method_15393((float)(-Math.toDegrees(Math.atan2(diffY, diffXZ))));
+    
+    // 2. Get the current player angles
+    float currentYaw = client.field_1724.method_36454(); // Assuming method_36454() or direct field access reads current yaw
+    float currentPitch = client.field_1724.method_36455(); // Assuming method_36455() or direct field access reads current pitch
+    
+    // 3. Smoothly interpolate angles (Adjust 'speed' between 0.05f and 0.3f. Lower = smoother/slower)
+    float speed = 0.15f; 
+    
+    // Use wrapDegrees to make sure yaw doesn't spin 360 degrees the wrong way when passing the threshold
+    float deltaYaw = class_3532.method_15393(targetYaw - currentYaw);
+    float deltaPitch = targetPitch - currentPitch;
+    
+    float newYaw = currentYaw + deltaYaw * speed;
+    float newPitch = currentPitch + deltaPitch * speed;
+    
+    // 4. Apply the smoothed values
+    client.field_1724.method_36456(newYaw);
+    client.field_1724.method_36457(newPitch);
+    
+    // Keep internal engine fields synced to prevent stuttering
+    client.field_1724.field_6241 = newYaw;
+    client.field_1724.field_6283 = newYaw;
+    client.field_1724.field_5982 = newYaw;
+    client.field_1724.field_6004 = newPitch;
 }
+

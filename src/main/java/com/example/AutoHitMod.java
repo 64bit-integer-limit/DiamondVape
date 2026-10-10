@@ -48,28 +48,41 @@ public class AutoHitMod implements ClientModInitializer {
    }
 
 
-private void attackEntity(class_1297 target) {
-   // Ensure the client context and player are valid before clicking
-   if (this.client.field_1761 == null || this.client.field_1724 == null || target == null) {
-      return;
+private void lockOnEntity(class_310 client, class_1309 entity) {
+    // Target position calculation
+    class_243 targetPos = entity.method_33571().method_1023(0.0, 0.2, 0.0);
+    class_243 playerPos = client.field_1724.method_33571();
+    
+    double diffX = targetPos.field_1352 - playerPos.field_1352;
+    double diffY = targetPos.field_1351 - playerPos.field_1351;
+    double diffZ = targetPos.field_1350 - playerPos.field_1350;
+    double diffXZ = Math.sqrt(diffX * diffX + diffZ * diffZ);
+    
+    // Calculate the absolute target angles
+    float targetYaw = class_3532.method_15393((float)Math.toDegrees(Math.atan2(diffZ, diffX)) - 90.0F);
+    float targetPitch = class_3532.method_15393((float)(-Math.toDegrees(Math.atan2(diffY, diffXZ))));
+    
+    // Define the speed factor (0.0f = no movement, 1.0f = instant lock-on)
+    float speedFactor = 0.15F; 
+
+    // FIXED: Using getter methods instead of private fields
+    float currentYaw = client.field_1724.method_36454(); 
+    float currentPitch = client.field_1724.method_36455(); 
+
+    // Safely interpolate angles by finding the shortest path distance
+    float yawDiff = class_3532.method_15393(targetYaw - currentYaw);
+    float pitchDiff = class_3532.method_15393(targetPitch - currentPitch);
+
+    float interpolatedYaw = currentYaw + yawDiff * speedFactor;
+    float interpolatedPitch = currentPitch + pitchDiff * speedFactor;
+
+    // Apply the smoothed angles
+    client.field_1724.method_36456(interpolatedYaw);
+    client.field_1724.method_36457(interpolatedPitch);
+    client.field_1724.field_6241 = interpolatedYaw;
+    client.field_1724.field_6283 = interpolatedYaw;
+    client.field_1724.field_5982 = interpolatedYaw;
+    client.field_1724.field_6004 = interpolatedPitch;
    }
-
-   try {
-      // 1. Initialize the Java Robot controller
-      Robot mouseRobot = new Robot();
-
-      // 2. Simulate pressing down the physical left mouse button
-      mouseRobot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-
-      // 3. Introduce a tiny delay (in milliseconds) to mirror real human hardware responsiveness
-      Thread.sleep(10); 
-
-      // 4. Simulate releasing the physical left mouse button
-      mouseRobot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-
-   } catch (Exception e) {
-      // Handle potential headless environment errors or thread interruptions safely
-      e.printStackTrace();
-      }
-   }
+}
 }

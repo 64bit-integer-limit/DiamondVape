@@ -67,7 +67,10 @@ public class ESPMod implements ClientModInitializer {
       RenderSystem.enableBlend();
       RenderSystem.disableDepthTest();
       bufferBuilder.method_1328(class_5596.field_29344, class_290.field_1576);
-      class_761.method_22982(matrices, bufferBuilder, box, 1.0F, 0.0F, 0.0F, 1.0F);
+      
+      // Changed color parameters from Red (1.0F, 0.0F, 0.0F) to Cyan (0.0F, 1.0F, 1.0F)
+      class_761.method_22982(matrices, bufferBuilder, box, 0.0F, 1.0F, 1.0F, 1.0F);
+      
       tessellator.method_1350();
       RenderSystem.enableDepthTest();
       RenderSystem.disableBlend();

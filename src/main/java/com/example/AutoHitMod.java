@@ -41,34 +41,41 @@ public class AutoHitMod implements ClientModInitializer {
          }
       });
    }
+import java.lang.reflect.Method;
+
 private void attackEntity(class_1297 target) {
    if (this.client.field_1761 != null && this.client.field_1724 != null && target != null) {
-      // 1. Store what the player is actually looking at right now
-      class_1297 originalTarget = this.client.field_1692; 
-
-      // 2. Set crosshair target to your desired bot target
-      this.client.field_1692 = target; 
       
-      // 3. Dynamically locate and execute the private doAttack method via Reflection
+      // 1. Back up the player's true crosshair state to prevent camera/mouse glitching
+      class_1297 originalTargetedEntity = this.client.field_1692; // targetedEntity
+      net.minecraft.class_239 originalCrosshairTarget = this.client.field_1765; // crosshairTarget
+
+      // 2. Generate a fake EntityHitResult spoofing that your mouse cursor is touching the bot target
+      net.minecraft.class_3966 fakeEntityHit = new net.minecraft.class_3966(target);
+
+      // 3. Spoof the game fields completely
+      this.client.field_1692 = target;             // Sets targetedEntity
+      this.client.field_1765 = fakeEntityHit;       // Sets crosshairTarget to our fake EntityHitResult
+
+      // 4. Force the game engine to execute a real native left-click using your Reflection loop
       try {
           Method doAttackMethod;
           try {
-              // Try development/intermediary name used during gradlew compilation
               doAttackMethod = this.client.getClass().getDeclaredMethod("method_1536");
           } catch (NoSuchMethodException e) {
-              // Production/Obfuscated fallback name just in case
               doAttackMethod = this.client.getClass().getDeclaredMethod("doAttack");
           }
           
-          doAttackMethod.setAccessible(true); // Bypass the "private" restriction safely
-          doAttackMethod.invoke(this.client); // Execute the left-click
+          doAttackMethod.setAccessible(true); 
+          doAttackMethod.invoke(this.client); 
           
       } catch (Exception e) {
-          e.printStackTrace(); // Log an error to console if something breaks
+          e.printStackTrace(); 
       }
 
-      // 4. Restore the original target instantly
-      this.client.field_1692 = originalTarget; 
+      // 5. Restore the player's actual crosshair state immediately after the attack executes
+      this.client.field_1692 = originalTargetedEntity; 
+      this.client.field_1765 = originalCrosshairTarget; 
       }
    }
 }

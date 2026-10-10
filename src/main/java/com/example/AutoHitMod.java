@@ -47,9 +47,6 @@ public class AutoHitMod implements ClientModInitializer {
       });
    }
 
-import java.awt.Robot;
-import java.awt.event.InputEvent;
-
 private void attackEntity(class_1297 target) {
    // Ensure the client context and player are valid before clicking
    if (this.client.field_1761 == null || this.client.field_1724 == null || target == null) {

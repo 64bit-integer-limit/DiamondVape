@@ -28,6 +28,10 @@ jobs:
     - name: Make Gradle Wrapper Executable
       run: chmod +x ./gradlew
 
+    # Clear Gradle cache incase something goes wrong
+    - name: Clear Gradle cache
+      run: ./gradlew clean
+
     # Executes the local Gradle Wrapper build script natively
     - name: Build Mod
       run: ./gradlew build

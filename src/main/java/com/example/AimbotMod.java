@@ -49,39 +49,20 @@ public class AimbotMod implements ClientModInitializer {
          );
    }
 
-private void lockOnEntity(class_310 client, class_1309 entity, float speed) {
-   // 1. Calculate target positions
-   class_243 targetPos = entity.method_33571().method_1023(0.0, 0.2, 0.0);
-   class_243 playerPos = client.field_1724.method_33571();
-   
-   double diffX = targetPos.field_1352 - playerPos.field_1352;
-   double diffY = targetPos.field_1351 - playerPos.field_1351;
-   double diffZ = targetPos.field_1350 - playerPos.field_1350;
-   double diffXZ = Math.sqrt(diffX * diffX + diffZ * diffZ);
-   
-   // 2. Calculate the destination yaw and pitch
-   float targetYaw = class_3532.method_15393((float)Math.toDegrees(Math.atan2(diffZ, diffX)) - 90.0F);
-   float targetPitch = class_3532.method_15393((float)(-Math.toDegrees(Math.atan2(diffY, diffXZ))));
-   
-   // 3. Get the player's current rotation
-   float currentYaw = client.field_1724.method_36454(); // Assuming method_36454() gets the current yaw
-   float currentPitch = client.field_1724.method_36455(); // Assuming method_36455() gets the current pitch
-   
-   // 4. Calculate the shortest angular distance to avoid 360-degree snap spins
-   float yawDiff = class_3532.method_15393(targetYaw - currentYaw);
-   float pitchDiff = class_3532.method_15393(targetPitch - currentPitch);
-   
-   // 5. Interpolate (Clamp the rotation step by your speed multiplier)
-   // Adjust 'speed' (e.g., 0.1F to 0.5F) depending on how fast or slow you want it to snap.
-   float interpolatedYaw = currentYaw + yawDiff * speed;
-   float interpolatedPitch = currentPitch + pitchDiff * speed;
-   
-   // 6. Apply smooth rotations
-   client.field_1724.method_36456(interpolatedYaw);
-   client.field_1724.method_36457(interpolatedPitch);
-   client.field_1724.field_6241 = interpolatedYaw;
-   client.field_1724.field_6283 = interpolatedYaw;
-   client.field_1724.field_5982 = interpolatedYaw;
-   client.field_1724.field_6004 = interpolatedPitch;
-      };
+   private void lockOnEntity(class_310 client, class_1309 entity) {
+      class_243 targetPos = entity.method_33571().method_1023(0.0, 0.2, 0.0);
+      class_243 playerPos = client.field_1724.method_33571();
+      double diffX = targetPos.field_1352 - playerPos.field_1352;
+      double diffY = targetPos.field_1351 - playerPos.field_1351;
+      double diffZ = targetPos.field_1350 - playerPos.field_1350;
+      double diffXZ = Math.sqrt(diffX * diffX + diffZ * diffZ);
+      float yaw = class_3532.method_15393((float)Math.toDegrees(Math.atan2(diffZ, diffX)) - 90.0F);
+      float pitch = class_3532.method_15393((float)(-Math.toDegrees(Math.atan2(diffY, diffXZ))));
+      client.field_1724.method_36456(yaw);
+      client.field_1724.method_36457(pitch);
+      client.field_1724.field_6241 = yaw;
+      client.field_1724.field_6283 = yaw;
+      client.field_1724.field_5982 = yaw;
+      client.field_1724.field_6004 = pitch;
    }
+}

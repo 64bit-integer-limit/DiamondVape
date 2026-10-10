@@ -12,16 +12,17 @@ base {
 
 repositories {
     maven { url = "https://fabricmc.net" }
-    // Add Chocohead's maven to fetch the pre-packaged Intermediary development mappings
-    maven { url = "https://jitpack.io" }
     mavenCentral()
 }
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
 
-    // Use a pre-packaged Intermediary mapping toolchain that exposes raw class_XXX names to the compiler
-    mappings "com.github.Chocohead:Fabric-Loom-Intermediary:${project.minecraft_version}"
+    // Use a custom layered mapping that pulls the official Intermediary 
+    // registry directly from the Fabric repository, preventing translation to Yarn.
+    mappings loom.layered {
+        mappings("net.fabricmc:intermediary:${project.minecraft_version}:v2@jar")
+    }
 
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"

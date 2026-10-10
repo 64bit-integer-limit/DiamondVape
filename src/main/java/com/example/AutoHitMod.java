@@ -40,14 +40,12 @@ public class AutoHitMod implements ClientModInitializer {
          }
       });
    }
-
 private void attackEntity(class_1297 target) {
     if (this.client.field_1761 != null && this.client.field_1724 != null) {
-        // Point the crosshair/target to the entity so the game registers it during the swing
-        this.client.field_1765 = new class_3966(target); 
+        // Point the crosshair/target to the entity using its position vector to avoid NullPointerExceptions
+        this.client.field_1765 = new class_3966(target, target.method_19538()); 
         
         // Simulates a physical left click input
         ((MinecraftClientAccessor) this.client).invokeDoAttack(); 
-       }
-   };
+    }
 }

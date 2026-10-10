@@ -1,6 +1,5 @@
 package com.example;
 
-import java.lang.reflect.Field;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -49,24 +48,23 @@ public class AutoHitMod implements ClientModInitializer {
          return;
       }
 
-      try {
-         // Get the vanilla left-click key binding instance
-         class_304 attackKeyBind = this.client.field_1690.field_1904; // client.options.attackKey
+      // Safely run everything synchronized on the client main thread
+      this.client.execute(() -> {
+         // Get the vanilla left-click key binding instance natively
+         class_304 attackKeyBind = this.client.field_1690.field_1904; 
 
-         // 1. Force the physical press state to true
+         // Set the keybind state to active
          attackKeyBind.method_23481(true); // setPressed(true)
 
-         // 2. Inject a click directly into the KeyBinding's internal input stream queue (field_1653 = timesPressed)
-         try {
-             Field timesPressedField = class_304.class.getDeclaredField("field_1653");
-             timesPressedField.setAccessible(true);
-             
-             // Tell the game loop the key was clicked 1 time natively
-             timesPressedField.setInt(attackKeyBind, 1); 
-         } catch (Exception ignored) {}
+         // Force the game engine to natively evaluate the keypress sequence 
+         // through the official options handler loop
+         if (this.client.field_1690.field_1904.method_1436()) {
+             // Accessor method executes the vanilla click sequence inside the correct tick delta
+             this.client.method_1536(); // Natively triggers doAttack() safely
+         }
 
-      } catch (Exception e) {
-         e.printStackTrace();
-      }
+         // Instantly release the key state to prevent the attack key from sticking down
+         attackKeyBind.method_23481(false); // setPressed(false)
+      });
    }
 }

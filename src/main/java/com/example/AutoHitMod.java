@@ -51,5 +51,7 @@ private void attackEntity(class_1297 target) {
 
       // 3. Clean up: Restore the original crosshair target immediately
       this.client.field_1300 = originalTarget; 
+      }
    }
+
 }

@@ -41,7 +41,6 @@ public class AutoHitMod implements ClientModInitializer {
          }
       });
    }
-import java.lang.reflect.Method;
 
 private void attackEntity(class_1297 target) {
    if (this.client.field_1761 != null && this.client.field_1724 != null && target != null) {

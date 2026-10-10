@@ -11,19 +11,17 @@ base {
 }
 
 repositories {
-    maven { url = "https://maven.fabricmc.net/" }
+    maven { url = "https://fabricmc.net" }
+    // Add Chocohead's maven to fetch the pre-packaged Intermediary development mappings
+    maven { url = "https://jitpack.io" }
     mavenCentral()
 }
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
 
-    // Use Fabric's layered mapping API to force an empty translation layer.
-    // This allows the Java compiler to read raw 'class_XXX' Intermediary names.
-    mappings loom.layered {
-        officialMojangMappings()
-        // Leaving this empty forces Loom to map variables straight to Intermediary
-    }
+    // Use a pre-packaged Intermediary mapping toolchain that exposes raw class_XXX names to the compiler
+    mappings "com.github.Chocohead:Fabric-Loom-Intermediary:${project.minecraft_version}"
 
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"

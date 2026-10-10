@@ -66,9 +66,9 @@ private void lockOnEntity(class_310 client, class_1309 entity) {
     // Define the speed factor (0.0f = no movement, 1.0f = instant lock-on)
     float speedFactor = 0.15F; 
 
-    // FIXED: Directly reading the fields for current yaw and pitch
-    float currentYaw = client.field_1724.field_6031; 
-    float currentPitch = client.field_1724.field_5965; 
+    // FIXED: Using getter methods instead of private fields
+    float currentYaw = client.field_1724.method_36454(); 
+    float currentPitch = client.field_1724.method_36455(); 
 
     // Safely interpolate angles by finding the shortest path distance
     float yawDiff = class_3532.method_15393(targetYaw - currentYaw);
